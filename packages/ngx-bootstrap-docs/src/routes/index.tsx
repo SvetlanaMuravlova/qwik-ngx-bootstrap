@@ -1,6 +1,7 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import { Link } from '@builder.io/qwik-city';
+import {CustomLink} from "~/routing/link";
 
 export default component$(() => {
 
@@ -16,7 +17,7 @@ export default component$(() => {
               </Link>
             </div>
             <div class="button-box d-flex justify-content-between">
-              <Link href="/documentation#getting-started" class="btn btn-primary text-white">Get started</Link>
+                <CustomLink path={'/documentation#getting-started'} class={'btn btn-primary text-white'}>Get started</CustomLink>
             <Link href="/documentation" class="btn btn-outline-primary">Documentation</Link>
           </div>
         </div>

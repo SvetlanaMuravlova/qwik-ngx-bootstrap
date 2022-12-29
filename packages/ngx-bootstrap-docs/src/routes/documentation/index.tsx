@@ -1,8 +1,40 @@
-import { component$ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
+import {component$, $, useRef, useOnWindow, useClientEffect$} from '@builder.io/qwik';
+import { Link, useNavigate, useLocation } from '@builder.io/qwik-city';
 import DemoSection from '../../components/demo-section/demo-section';
+import * as React from 'react';
 
 export default component$(() => {
+  const nav = useNavigate();
+
+
+  useClientEffect$(() => {
+    // if (hash) {
+    //   // We want to reset if the hash has changed
+    //   if (hashRef.current !== hash) {
+    //     hashRef.current = hash;
+    //     scrolledRef.current = false;
+    //   }
+    //
+    //   // only attempt to scroll if we haven't yet (this could have just reset above if hash changed)
+    //   if (!scrolledRef.current) {
+    //     const id = hash.replace('#', '');
+    //     const element = document.getElementById(id);
+    //     if (element) {
+    //       element.scrollIntoView({ behavior: 'smooth' });
+    //       scrolledRef.current = true;
+    //     }
+    //   }
+    // }
+})
+
+  const anchorScroll = $((url: string, anchor: string) => {
+    window.history.replaceState(null, '', `#${anchor}`);
+  });
+
+  useClientEffect$(() => {
+
+  })
+
   return (
     <DemoSection>
       <div id="content" className="content-box d-block pl-0 ps-0 pe-0 pr-0">
@@ -59,7 +91,11 @@ export default component$(() => {
           <h2>Table of contents</h2>
           <ol>
             <li>
-              <Link href={'/documentation/#getting-started'} >Getting Started</Link>
+              {/*todo make anchor dcroll in normal way, there are troubles now*/}
+              <Link href={'./#getting-started'} preventdefault:click onClick$={() => anchorScroll('documentation', 'usage--demo')}>Getting Started</Link>
+              {/*<a href="." preventdefault:click onClick$={() => anchorScroll('documentation', 'usage--demo')}>*/}
+              {/*  click me!*/}
+              {/*</a>*/}
             </li>
             {/*<li><a routerLink="." fragment="usage--demo">Usage & Demo</a></li>*/}
             {/*<li><a routerLink="." fragment="supporting-ngx-bootstrap">Supporting NGX-Bootstrap</a></li>*/}
@@ -86,7 +122,7 @@ export default component$(() => {
           </h2>
           <p>
             Bootstrap components for Angular applications, dozens of demos and API documentation could be found here:
-            {/*<a routerLink="/components">https://valor-software.com/ngx-bootstrap</a>.*/}
+            <Link href={'/components'}>https://valor-software.com/ngx-bootstrap</Link>
           </p>
 
           <h2 id="supporting-ngx-bootstrap">
@@ -123,71 +159,71 @@ export default component$(() => {
 
           <h4>Manual way</h4>
           <p>Install <code>ngx-bootstrap</code> from <code>npm</code></p>
-          {/*<pre className="prettyprint lang-bash prettyprinted"><span className="pln">npm install ngx</span><span*/}
-          {/*  className="pun">-</span><span className="pln">bootstrap </span><span className="pun">--</span><span*/}
-          {/*  className="pln">save</span></pre>*/}
+          <pre className="prettyprint lang-bash prettyprinted"><span className="pln">npm install ngx</span><span
+            className="pun">-</span><span className="pln">bootstrap </span><span className="pun">--</span><span
+            className="pln">save</span></pre>
           <p>Add wanted package to NgModule imports:</p>
 
-  {/*        <pre className="prettyprint lang-js prettyprinted">*/}
-  {/*<span className="kwd">import</span><span className="pln"> </span><span className="pun">{{'{'}}</span><span*/}
-  {/*          className="kwd"> TooltipModule </span><span*/}
-  {/*          className="pun">{{'}'}}</span><span className="pln"> from </span><span*/}
-  {/*          className="str">'ngx-bootstrap/tooltip'</span><span*/}
-  {/*          className="pun">;</span>*/}
-  {/*<span className="pln">&nbsp;</span>*/}
-  {/*<span className="lit">@NgModule</span><span className="pun">({{'{'}}</span>*/}
-  {/*<span className="pln">  &hellip;</span>*/}
-  {/*<span className="pln">  imports:</span><span className="pln"> </span><span className="pln">[</span><span*/}
-  {/*          className="pln"> </span><span*/}
-  {/*          className="typ">TooltipModule<span className="pln">.forRoot(), &hellip;</span></span><span*/}
-  {/*          className="pln"> </span><span*/}
-  {/*          className="pun">]</span>*/}
-  {/*<span className="pln">  &hellip;</span>*/}
-  {/*<span className="pun">{{'}'}})</span></pre>*/}
+          <pre className="prettyprint lang-js prettyprinted">
+  <span className="kwd">import</span><span className="pln"> </span><span className="pun">{'{'}</span><span
+            className="kwd"> TooltipModule </span><span
+            className="pun">{'}'}</span><span className="pln"> from </span><span
+            className="str">'ngx-bootstrap/tooltip'</span><span
+            className="pun">;</span>
+  <span className="pln">&nbsp;</span>
+  <span className="lit">@NgModule</span><span className="pun">({'{'}</span>
+  <span className="pln">  &hellip;</span>
+  <span className="pln">  imports:</span><span className="pln"> </span><span className="pln">[</span><span
+            className="pln"> </span><span
+            className="typ">TooltipModule<span className="pln">.forRoot(), &hellip;</span></span><span
+            className="pln"> </span><span
+            className="pun">]</span>
+  <span className="pln">  &hellip;</span>
+  <span className="pun">{'}'})</span></pre>
 
           <p>Add component to your page:</p>
 
-  {/*        <pre className="prettyprint lang-js prettyprinted">*/}
-  {/*<span className="kwd">&lt;button</span><span className="pln"> </span><span className="atn">type</span><span*/}
-  {/*          className="pun">=</span><span className="atv">"button"</span><span className="pln"> </span><span*/}
-  {/*          className="atn">class</span><span className="pun">=</span><span className="atv">"btn btn-primary"</span>*/}
-  {/*<span className="atn">        tooltip</span><span className="pun">=</span><span className="atv">"Vivamus sagittis lacus vel augue laoreet rutrum faucibus."</span><span*/}
-  {/*          className="kwd">&gt;</span>*/}
-  {/*<span className="pln">  Simple demo</span>*/}
-  {/*<span className="kwd">&lt;/button&gt;</span></pre>*/}
+          <pre className="prettyprint lang-js prettyprinted">
+  <span className="kwd">&lt;button</span><span className="pln"> </span><span className="atn">type</span><span
+            className="pun">=</span><span className="atv">"button"</span><span className="pln"> </span><span
+            className="atn">class</span><span className="pun">=</span><span className="atv">"btn btn-primary"</span>
+  <span className="atn">        tooltip</span><span className="pun">=</span><span className="atv">"Vivamus sagittis lacus vel augue laoreet rutrum faucibus."</span><span
+            className="kwd">&gt;</span>
+  <span className="pln">  Simple demo</span>
+  <span className="kwd">&lt;/button&gt;</span></pre>
 
           <p>You will need to add bootstrap css:</p>
           <ul>
             <li><code>Bootstrap 5</code></li>
           </ul>
 
-{/*          <pre className="prettyprint prettyprinted"><span className="com">&lt;!--- index.html --&gt;</span><span*/}
-{/*            className="pln"></span>*/}
-{/*<span className="tag">&lt;link</span><span className="pln"> </span><span className="atn">href</span><span*/}
-{/*              className="pun">=</span><span*/}
-{/*              className="atv">"https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"</span><span*/}
-{/*              className="pln"> </span><span className="atn">rel</span><span className="pun">=</span><span*/}
-{/*              className="atv">"stylesheet"</span> <span className="atn">crossorigin</span><span className="pun">=</span><span*/}
-{/*              className="atv">"anonymous"</span> <span className="atn">integrity</span><span*/}
-{/*              className="pun">=</span><span*/}
-{/*              className="atv">"sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"</span><span*/}
-{/*              className="tag">&gt;</span></pre>*/}
+          <pre className="prettyprint prettyprinted"><span className="com">&lt;!--- index.html --&gt;</span><span
+            className="pln"></span>
+<span className="tag">&lt;link</span><span className="pln"> </span><span className="atn">href</span><span
+              className="pun">=</span><span
+              className="atv">"https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"</span><span
+              className="pln"> </span><span className="atn">rel</span><span className="pun">=</span><span
+              className="atv">"stylesheet"</span> <span className="atn">crossorigin</span><span className="pun">=</span><span
+              className="atv">"anonymous"</span> <span className="atn">integrity</span><span
+              className="pun">=</span><span
+              className="atv">"sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"</span><span
+              className="tag">&gt;</span></pre>
 
           <ul>
             <li><code>Bootstrap 4</code></li>
           </ul>
 
-{/*          <pre className="prettyprint prettyprinted"><span className="com">&lt;!--- index.html --&gt;</span><span*/}
-{/*            className="pln"></span>*/}
-{/*<span className="tag">&lt;link</span><span className="pln"> </span><span className="atn">href</span><span*/}
-{/*              className="pun">=</span><span*/}
-{/*              className="atv">"https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"</span><span*/}
-{/*              className="pln"> </span><span className="atn">rel</span><span className="pun">=</span><span*/}
-{/*              className="atv">"stylesheet"</span> <span className="atn">crossorigin</span><span className="pun">=</span><span*/}
-{/*              className="atv">"anonymous"</span> <span className="atn">integrity</span><span*/}
-{/*              className="pun">=</span><span*/}
-{/*              className="atv">"sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"</span><span*/}
-{/*              className="tag">&gt;</span></pre>*/}
+          <pre className="prettyprint prettyprinted"><span className="com">&lt;!--- index.html --&gt;</span><span
+            className="pln"></span>
+<span className="tag">&lt;link</span><span className="pln"> </span><span className="atn">href</span><span
+              className="pun">=</span><span
+              className="atv">"https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"</span><span
+              className="pln"> </span><span className="atn">rel</span><span className="pun">=</span><span
+              className="atv">"stylesheet"</span> <span className="atn">crossorigin</span><span className="pun">=</span><span
+              className="atv">"anonymous"</span> <span className="atn">integrity</span><span
+              className="pun">=</span><span
+              className="atv">"sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"</span><span
+              className="tag">&gt;</span></pre>
 
           <h3>Setting up the bootstrap version manually</h3>
           <p>
@@ -206,36 +242,36 @@ export default component$(() => {
             in the bootstrapping component (i.e. <code>AppComponent</code>):
           </p>
 
-  {/*        <pre className="prettyprint lang-js prettyprinted">*/}
-  {/*<span className="kwd">import</span><span className="pln"> </span><span className="pun">{{'{'}}</span><span*/}
-  {/*          className="pln"> setTheme </span><span className="pun">{{'}'}}</span><span*/}
-  {/*          className="pln"> from </span><span className="str">'ngx-bootstrap/utils'</span><span*/}
-  {/*          className="pun">;</span>*/}
-  {/*<span className="pln">&nbsp;</span>*/}
-  {/*<span className="lit">@Component</span><span className="pun">({{'{'}}</span><span className="pln">&hellip;</span><span*/}
-  {/*          className="pun">{{'}'}})</span>*/}
-  {/*<span className="kwd">export</span><span className="pln"> </span><span className="kwd">class</span><span*/}
-  {/*          className="pln"> </span><span*/}
-  {/*          className="typ">AppComponent</span><span className="pln"> </span><span className="pun">{{'{'}}</span>*/}
-  {/*// <span className="pln">  constructor</span><span className="pun">()</span><span className="pln"> </span><span*/}
-  {/*          className="pun">{{'{'}}</span>*/}
-  {/*<span className="pln">    setTheme</span><span className="pun">(</span><span className="str">'bs3'</span><span*/}
-  {/*//           className="pun">);</span><span*/}
-  {/*//           className="pln"> </span><span className="com">// or 'bs4'</span>*/}
-  {/*<span className="pln">    <span className="pln">&hellip;</span></span>*/}
-  {/*<span className="pln">  </span><span className="pun">{{'}'}}</span>*/}
-  {/*<span className="pun">{{'}'}}</span></pre>*/}
+          <pre className="prettyprint lang-js prettyprinted">
+  <span className="kwd">import</span><span className="pln"> </span><span className="pun">{'{'}</span><span
+            className="pln"> setTheme </span><span className="pun">{'}'}</span><span
+            className="pln"> from </span><span className="str">'ngx-bootstrap/utils'</span><span
+            className="pun">;</span>
+  <span className="pln">&nbsp;</span>
+  <span className="lit">@Component</span><span className="pun">({'{'}</span><span className="pln">&hellip;</span><span
+            className="pun">{'}'})</span>
+  <span className="kwd">export</span><span className="pln"> </span><span className="kwd">class</span><span
+            className="pln"> </span><span
+            className="typ">AppComponent</span><span className="pln"> </span><span className="pun">{'{'}</span>
+  <span className="pln">  constructor</span><span className="pun">()</span><span className="pln"> </span><span
+            className="pun">{'{'}</span>
+  <span className="pln">    setTheme</span><span className="pun">(</span><span className="str">'bs3'</span><span
+            className="pun">);</span><span
+            className="pln"> </span><span className="com">// or 'bs4'</span>
+  <span className="pln">    <span className="pln">&hellip;</span></span>
+  <span className="pln">  </span><span className="pun">{'}'}</span>
+  <span className="pun">{'}'}</span></pre>
 
           <h3>How to build lib for development</h3>
           <p>First time:</p>
 
-  {/*        <pre className="prettyprint lang-bash prettyprinted">*/}
-  {/*<span className="pln">git clone</span><span*/}
-  {/*          className="pln"> https://github.com/valor-software/ngx-bootstrap.git</span>*/}
-  {/*<span className="atn">cd</span><span className="pln"> ngx-bootstrap</span>*/}
-  {/*<span className="pln">npm ci</span>*/}
-  {/*<span className="pln">npm run build</span>*/}
-  {/*<span className="pln">npm start</span></pre>*/}
+          <pre className="prettyprint lang-bash prettyprinted">
+  <span className="pln">git clone</span><span
+            className="pln"> https://github.com/valor-software/ngx-bootstrap.git</span>
+  <span className="atn">cd</span><span className="pln"> ngx-bootstrap</span>
+  <span className="pln">npm ci</span>
+  <span className="pln">npm run build</span>
+  <span className="pln">npm start</span></pre>
 
           <h2 id="compatibility">
             Compatibility

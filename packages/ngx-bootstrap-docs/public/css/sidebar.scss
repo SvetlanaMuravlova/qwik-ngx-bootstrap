@@ -37,11 +37,11 @@
     cursor: pointer;
 
     &:before {
-      content: url('../../assets/images/icons/icon-arrow.svg');
+      content: url('../images/icons/icon-arrow.svg');
     }
 
     &:after {
-      content: url('../../assets/images/icons/icon-arrow.svg');
+      content: url('../images/icons/icon-arrow.svg');
       left: 3px;
     }
 
@@ -251,7 +251,7 @@
       &.icon {
 
         &:after {
-          content: url("../../assets/images/icons/icon-arrow.svg");
+          content: url("../images/icons/icon-arrow.svg");
           display: inline-block;
           transform: rotate(-90deg);
           transition: all ease .2s;

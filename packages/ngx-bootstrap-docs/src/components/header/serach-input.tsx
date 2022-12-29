@@ -6,15 +6,13 @@ export default component$((props: {showInput: boolean}) => {
   const state = useStore({
     isShown: false,
     search: { text: '' },
-  }, { recursive: true })
-
-  // const showValue = $((ev: unknown) => console.log(ev));
+  }, { recursive: true });
 
   return (
     <>
-      <div className="w-100 icon">
+      <div className={`w-100 icon ${props.showInput ? "" : "hideInput"}`}>
         <form>
-          <div className={`input-container ${props.showInput ? "" : "hideInput"}`}>
+          <div className={`input-container`}>
             <input
               type="text"
               aria-label="Search in docs" name="search"
@@ -34,7 +32,8 @@ export const SearchList = component$(() => {
 
 
   return (
-    <ul className="sidebar-list menu" data-cypress="search-result">
+    <>
+     {/*<ul className="sidebar-list menu" data-cypress="search-result">*/}
       {/*todo finish search functionality, when routes folder will be full*/}
 {/*      //   <ng-container *ngFor="let route of routes | slice:4 | SearchFilter:search.text">*/}
 {/*      //   <li *ngIf="route.path"*/}
@@ -46,7 +45,8 @@ export const SearchList = component$(() => {
 {/*      //   <a [routerLink]="getRouteLink(route.path)" class="text-white d-block w-100">{{route.data[0]}}</a>*/}
 {/*// </li>*/}
 {/*// </ng-container>*/}
-    </ul>
+{/*     </ul>*/}
+    </>
   )
 })
 
