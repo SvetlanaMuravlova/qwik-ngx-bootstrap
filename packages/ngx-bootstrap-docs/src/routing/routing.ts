@@ -7,8 +7,10 @@ import {RoutingConfig, RoutingConfigItem} from './routing-types';
 import {isServer} from '@builder.io/qwik/build';
 import cityPlan from "@qwik-city-plan";
 import documentation from "~/routes/documentation";
+import {RouteLocation, RouteParams, useLocation} from "@builder.io/qwik-city";
 
-let generalRoutesStructure: SidebarRoutesType;
+let generalRoutesStructure: Partial<SidebarRoutesType>;
+let _location: {path: string, query: Record<string, string>};
 
 export type SidebarRoutesType = {
   [key in "documentation" | "components" | "themes"]: Partial<SidebarRouteItemValueType>;
@@ -38,14 +40,14 @@ export const SidebarRoutesStructure: Partial<SidebarRoutesType> = {
     isOpened: false,
     title: 'DOCUMENTATION',
     icon: '/images/icons/icon-folder.svg',
-    path: 'documentation'
+    path: '/documentation'
   },
   components: {
     nestedRoutes: [],
     isOpened: false,
     title: 'COMPONENTS',
     icon: '/images/icons/icon-components.svg',
-    path: 'components'
+    path: '/components'
   }
   // themes: {
   //   nestedRoutes:[],
@@ -77,8 +79,8 @@ export function refactorPathName(path: string): string {
 }
 
 export function refactorPathsNames(path: string): string[] {
-  const route = path.split('/');
-  return route.filter(item => item);
+  const route = path.split('/').filter(item => item);
+  return route;
 }
 
 // safely get the window object
@@ -132,12 +134,10 @@ export function setRoutesCollection(): SidebarRoutesType  {
   Object.keys(nestedRouts).map((item) => {
     const parentRoute = nestedRouts[item as keyof typeof nestedRouts]?.parentRoute;
     if (routesList[parentRoute as keyof typeof routesList]) {
-      // routesList[parentRoute as keyof typeof routesList].nestedRoutes = [...routesList[parentRoute as keyof typeof routesList].nestedRoutes, nestedRouts[item as keyof typeof nestedRouts]]
       routesList[parentRoute as keyof typeof routesList].nestedRoutes?.push(nestedRouts[item as keyof typeof nestedRouts])
     }
   })
   generalRoutesStructure = routesList;
-  console.log(generalRoutesStructure)
   return routesList;
 }
 
@@ -176,7 +176,6 @@ function initFragments(): {title: string, path: string, isOpened: boolean}[] {
         // when the navigation buttons are being used
         // we want to set the routing state
         // getWindow()?.addEventListener('locationchange', (e) => {
-        //   console.log('event triggered', e);
             // const path = e.state.page;
             // setRoutingState(path, routingState);
         // })
@@ -254,40 +253,123 @@ function initFragments(): {title: string, path: string, isOpened: boolean}[] {
 //     return new URL(routingState.url).searchParams;
 // }
 
+
+
 export function toggleMenuItem(value: string, routes: Partial<SidebarRoutesType>): Partial<SidebarRoutesType> {
-  // console.log('1', routes)
-  let routesStructure = {...routes};
+  let routesStructure = {...generalRoutesStructure};
   if (routesStructure) {
     const key = value.toLowerCase();
-    routesStructure = resetMenuItems(routes);
+    routesStructure = resetMenuItems();
     if (routesStructure[key as keyof SidebarRoutesType]) {
       // @ts-ignore
       routesStructure[key as keyof SidebarRoutesType].isOpened = !routesStructure[key as keyof SidebarRoutesType].isOpened;
     }
   }
+
+  generalRoutesStructure = routesStructure;
   return routesStructure;
 }
 
-export function resetMenuItems(routes: Partial<SidebarRoutesType>): Partial<SidebarRoutesType> {
-  let routesStructure = {...routes};
+export function resetMenuItems(): Partial<SidebarRoutesType> {
+  let routesStructure = {...generalRoutesStructure};
 
   for(const item in routesStructure) {
     if (routesStructure[item as keyof SidebarRoutesType]) {
       // @ts-ignore
       routesStructure[item as keyof SidebarRoutesType].isOpened = false;
     }
-    if (routesStructure[item as keyof SidebarRoutesType]) {
+    if (routesStructure[item as keyof SidebarRoutesType]?.nestedRoutes?.length) {
       // @ts-ignore
-      routesStructure[item as keyof SidebarRoutesType].nestedRoutes = resetSemiMenu(routesStructure[item as keyof SidebarRoutesType]?.nestedRoutes) || [];
+      routesStructure[item as keyof SidebarRoutesType].nestedRoutes = _resetSemiMenu(routesStructure[item as keyof SidebarRoutesType]?.nestedRoutes);
     }
   }
 
+  generalRoutesStructure = routesStructure;
   return routesStructure;
 }
 
-export function resetSemiMenu (nestedRoutes?: Partial<NestedRouteType>[]): Partial<NestedRouteType>[] | undefined {
+function _resetSemiMenu (nestedRoutes?: Partial<NestedRouteType>[]): Partial<NestedRouteType>[] | undefined {
   if (!nestedRoutes) return;
   nestedRoutes.forEach(item => {
     item.isOpened = false;
   });
+  return nestedRoutes;
 };
+
+export function resetSemiMenu (nestedRoutes?: Partial<NestedRouteType>[]) {
+  const _nestedRoutes = _resetSemiMenu(nestedRoutes);
+  if (_nestedRoutes?.[0]?.parentRoute && generalRoutesStructure) {
+    const parentRoute = _nestedRoutes[0].parentRoute;
+    if (generalRoutesStructure[parentRoute as keyof typeof generalRoutesStructure] && generalRoutesStructure[parentRoute as keyof typeof generalRoutesStructure]?.nestedRoutes) {
+      // @ts-ignore
+      generalRoutesStructure[parentRoute as keyof typeof generalRoutesStructure].nestedRoutes = _nestedRoutes;
+    }
+  }
+  return generalRoutesStructure;
+}
+
+export function initBodyClass(property: boolean) {
+  property ? document.body.classList.add('menuIsOpened') : document.body.classList.remove('menuIsOpened');
+}
+
+export function firstMenuIniting(location: string): Partial<SidebarRoutesType> {
+  if (!generalRoutesStructure) {
+    setRoutesCollection();
+  }
+
+  if (generalRoutesStructure) {
+    resetMenuItems();
+  }
+
+  generalRoutesStructure = openMenuWithRoutePath(refactorPathsNames(location)) || generalRoutesStructure;
+  return generalRoutesStructure;
+}
+
+export function openMenuWithRoutePath(path: string[]): Partial<SidebarRoutesType> | undefined {
+
+  if (path.length > 1) {
+    return openMenuWithRoute(`/${path[0]}/${path[1]}`, path[0]) || generalRoutesStructure;
+  }
+
+  const currentRoute = _location.path;
+  // if (!currentRoute?.length || (!currentRoute[0].data?.[1]?.sideBarParentTitle && !currentRoute[0].children?.length)) {
+  //   return;
+  // }
+  //
+  // const key = currentRoute[0].children?.length ? currentRoute[0].path : currentRoute[0].data?.[1]?.sideBarParentTitle;
+  return openMenuWithRoute(path[0], path[0]);
+}
+
+export function openMenuWithRoute(routePath: string, parentPath: string) {
+  if (!generalRoutesStructure) {
+    return;
+  }
+  // @ts-ignore
+  generalRoutesStructure[parentPath as keyof typeof generalRoutesStructure].isOpened = true;
+  let currentMenuItem = generalRoutesStructure[parentPath as keyof typeof generalRoutesStructure]?.nestedRoutes?.find(route => route.path === routePath);
+  currentMenuItem = setMenuProperties(currentMenuItem) || currentMenuItem;
+  return generalRoutesStructure;
+}
+
+export function setMenuProperties(currentMenuItem?: Partial<NestedRouteType>) {
+  if (!currentMenuItem || !_location) {
+    return;
+  }
+  let query = _location.query;
+  const {tab} = query;
+
+  currentMenuItem.isOpened = true;
+  currentMenuItem?.fragments?.forEach((item: {title: string, path: string, isOpened: boolean}) => {
+    item.isOpened = item.path === tab;
+  });
+
+  return currentMenuItem;
+}
+
+export function setLocationPath(value: {path: string, query: Record<string, string>}): void {
+  _location = {
+    path: value.path,
+    query: value.query,
+  };
+}
+

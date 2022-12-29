@@ -19,8 +19,6 @@ export default component$((opts: { url: string | undefined }) => {
   })
 
   useOnWindow('locationchange', $((ev) => {
-    console.log(ev);
-    console.log(location);
     state.showSideBar = !!refactorPathName(location.pathname);
   }))
 

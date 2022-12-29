@@ -1,7 +1,7 @@
 import { component$, Slot } from '@builder.io/qwik';
 import { useNavigate } from "@builder.io/qwik-city";
 
-export const CustomLink = component$((opts: { path: string, class: string }) => {
+export const CustomLink = component$((opts: { path: string, class?: string }) => {
     const navigation = useNavigate();
     return (
         <a
